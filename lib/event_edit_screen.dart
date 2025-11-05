@@ -2,6 +2,8 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class EventEditScreen extends StatefulWidget {
   final Event? event;
@@ -35,6 +37,7 @@ class EventEditScreenState extends State<EventEditScreen> {
   @override
   void initState() {
     super.initState();
+    tz.initializeTimeZones();
     if (widget.event != null) {
       _titleController.text = widget.event!.title ?? '';
       _descriptionController.text = widget.event!.description ?? '';
@@ -219,8 +222,8 @@ class EventEditScreenState extends State<EventEditScreen> {
       eventId: widget.event?.eventId,
       title: _titleController.text,
       description: _descriptionController.text,
-      start: TZDateTime.from(start, local),
-      end: TZDateTime.from(end, local),
+      start: tz.TZDateTime.from(start, tz.local),
+      end: tz.TZDateTime.from(end, tz.local),
       allDay: _allDay,
     );
 
