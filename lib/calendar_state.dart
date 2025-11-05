@@ -75,11 +75,13 @@ class CalendarState with ChangeNotifier {
       final newEvents = <DateTime, List<dynamic>>{};
       for (final event in eventsResult) {
         if (event.start == null) continue;
-        final day = DateTime(event.start!.year, event.start!.month, event.start!.day);
+        final day = DateTime.utc(event.start!.year, event.start!.month, event.start!.day);
         newEvents[day] = [...newEvents[day] ?? [], event];
       }
       _events = newEvents;
-      _selectedEvents = _getEventsForDay(_selectedDay!);
+      if (_selectedDay != null) {
+        _selectedEvents = _getEventsForDay(_selectedDay!);
+      }
       notifyListeners();
     } catch (e, s) {
       if (kDebugMode) {
@@ -89,7 +91,7 @@ class CalendarState with ChangeNotifier {
   }
 
   List<dynamic> _getEventsForDay(DateTime day) {
-    return _events[DateTime(day.year, day.month, day.day)] ?? [];
+    return _events[DateTime.utc(day.year, day.month, day.day)] ?? [];
   }
 
   void onDaySelected(DateTime selectedDay, DateTime focusedDay) {

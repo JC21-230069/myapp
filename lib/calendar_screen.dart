@@ -26,42 +26,44 @@ class CalendarScreen extends StatelessWidget {
           _buildFormatButton(calendarState),
         ],
       ),
-      body: Column(
-        children: [
-          TableCalendar<Event>(
-            locale: 'ja_JP',
-            firstDay: DateTime.utc(2020, 1, 1),
-            lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: calendarState.focusedDay,
-            selectedDayPredicate: (day) =>
-                isSameDay(calendarState.selectedDay, day),
-            calendarFormat: calendarState.calendarFormat,
-            eventLoader: (day) =>
-                (calendarState.events[DateTime(day.year, day.month, day.day)] ??
-                    [])
-                    .cast<Event>()
-                    .toList(),
-            onDaySelected: calendarState.onDaySelected,
-            onPageChanged: calendarState.onPageChanged,
-            onFormatChanged: calendarState.onFormatChanged,
-            calendarStyle: const CalendarStyle(
-              todayDecoration: BoxDecoration(
-                color: Colors.teal,
-                shape: BoxShape.circle,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            TableCalendar<Event>(
+              locale: 'ja_JP',
+              firstDay: DateTime.utc(2020, 1, 1),
+              lastDay: DateTime.utc(2030, 12, 31),
+              focusedDay: calendarState.focusedDay,
+              selectedDayPredicate: (day) =>
+                  isSameDay(calendarState.selectedDay, day),
+              calendarFormat: calendarState.calendarFormat,
+              eventLoader: (day) =>
+                  (calendarState.events[DateTime(day.year, day.month, day.day)] ??
+                          [])
+                      .cast<Event>()
+                      .toList(),
+              onDaySelected: calendarState.onDaySelected,
+              onPageChanged: calendarState.onPageChanged,
+              onFormatChanged: calendarState.onFormatChanged,
+              calendarStyle: const CalendarStyle(
+                todayDecoration: BoxDecoration(
+                  color: Colors.teal,
+                  shape: BoxShape.circle,
+                ),
+                selectedDecoration: BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
               ),
-              selectedDecoration: BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle,
+              headerStyle: const HeaderStyle(
+                titleCentered: true,
+                formatButtonVisible: false,
               ),
             ),
-            headerStyle: const HeaderStyle(
-              titleCentered: true,
-              formatButtonVisible: false,
-            ),
-          ),
-          const Divider(),
-          Expanded(child: _buildEventList(context, calendarState)),
-        ],
+            const Divider(),
+            _buildEventList(context, calendarState),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateAndEditEvent(context, calendarState, null),
@@ -93,8 +95,8 @@ class CalendarScreen extends StatelessWidget {
         value: calendarState.selectedCalendar?.id,
         onChanged: (String? newValue) =>
             calendarState.onCalendarChanged(newValue),
-        items:
-            calendarState.calendars.map<DropdownMenuItem<String>>((dynamic calendar) {
+        items: calendarState.calendars
+            .map<DropdownMenuItem<String>>((dynamic calendar) {
           return DropdownMenuItem<String>(
             value: calendar.id,
             child: Text(
@@ -131,6 +133,8 @@ class CalendarScreen extends StatelessWidget {
       return const Center(child: Text('今日の予定はありません'));
     }
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: calendarState.selectedEvents.length,
       itemBuilder: (context, index) {
         final event = calendarState.selectedEvents[index];
